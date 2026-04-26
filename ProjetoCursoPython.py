@@ -36,7 +36,8 @@ def adicionarItem():
     print("\033[H\033[J", end="")
     print("Adicionar item:\n")
     item = str(input("Digite o nome do item que deseja adicionar: "))
-    
+    if item in carrinho:
+        atualizarQuantidade(item)
     while True:
         try:
             preco = float(input("Digite o preço do item: "))
@@ -104,7 +105,7 @@ def removerItem():
     menu()
     return
 
-def atualizarQuantidade():
+def atualizarQuantidade(item_selecionado=None):
     print("\033[H\033[J", end="")
     print("Atualizar quantidade do item:\n")
     if not carrinho:
@@ -113,20 +114,24 @@ def atualizarQuantidade():
         menu()
         return
 
-    for indice, item in enumerate(carrinho):
-        print(f"{indice} - {item}")
-    
-    while True:
-        try:
-            atualizacao = int(input("Digite o número do item que deseja atualizar: "))
-            if 0 <= atualizacao < len(carrinho):
-                break
-            else:
-                print(f"Opção inválida, digite um número entre 0 e {len(carrinho) - 1}")
-        except ValueError:
-            print("Erro! Digite um valor inteiro válido.")
+    if item_selecionado:
+        print(f"Como o item {item_selecionado} já existe no carrinho, vamos atualizar a quantidade dele ao invés de adicionar um novo item com o mesmo nome.\n")
+        chave_item = item_selecionado
+    else:
+        for indice, item in enumerate(carrinho):
+            print(f"{indice} - {item}")
+        
+        while True:
+            try:
+                atualizacao = int(input("Digite o número do item que deseja atualizar: "))
+                if 0 <= atualizacao < len(carrinho):
+                    break
+                else:
+                    print(f"Opção inválida, digite um número entre 0 e {len(carrinho) - 1}")
+            except ValueError:
+                print("Erro! Digite um valor inteiro válido.")
 
-    chave_item = list(carrinho.keys())[atualizacao]
+        chave_item = list(carrinho.keys())[atualizacao]
     print(f"Atualizando: {chave_item}")
     
     while True:
