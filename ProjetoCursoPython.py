@@ -83,9 +83,15 @@ def removerItem():
     
     while True:
         try:
-            remocao = int(input("Digite o número correspondente ao item que deseja remover: "))
+            remocao = int(input(f"Digite o número correspondente ao item que deseja remover, ou {len(carrinho)} para limpar toda a lista: "))
             if 0 <= remocao < len(carrinho):
                 break
+            elif remocao == len(carrinho):
+                carrinho.clear()
+                print("\033[H\033[J", end="")
+                print("Todos os elementos do carrinho foram limpos.\n")
+                menu()
+                return
             else:
                 print(f"Opção inválida, digite um número entre 0 e {len(carrinho) - 1}")
         except ValueError:
@@ -146,6 +152,7 @@ def visualizarLista():
     print("Lista de compras:\n")
     for item, detalhes in carrinho.items():
         print(f"{item} - Preço: R${detalhes['preco']:.2f}, Quantidade: {detalhes['quantidade']}, Valor Total: R${detalhes['valor_total']:.2f}\n")
+    print(f"Quantidade de itens no carrinho: {len(carrinho)}\n")
     if not carrinho:
         print("O carrinho está vazio.")
     retornar = input("Pressione Enter para voltar ao menu principal...")
