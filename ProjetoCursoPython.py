@@ -127,8 +127,10 @@ def atualizarQuantidade():
         try:
             nova_quantidade = int(input(f"Digite a nova quantidade para {chave_item}: "))
             if nova_quantidade < 0:
-                print("A quantidade não pode ser negativa!")
-                continue
+                print("\033[H\033[J", end="")
+                carrinho.pop(chave_item)
+                print("O item foi removido do carrinho, pois a quantidade inserida é negativa.\n")
+                menu()
             break
         except ValueError:
             print("Erro! Digite um valor inteiro válido.")
