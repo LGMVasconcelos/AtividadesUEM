@@ -14,10 +14,20 @@ carrinho = {}
 def menu():
     opcoes = ("1 - Adicionar item", "2 - Remover item", "3 - Atualizar quantidade", "4 - Visualizar lista", "5 - Sair" )    
     
-    for item in opcoes:
-        print(item)
-    opcao = int(input(f"Por favor, digite uma opção entre 1 e {len(opcoes)}: "))
-
+    while True:
+        try:
+            for item in opcoes:
+                print(item)
+            opcao = int(input(f"Por favor, digite uma opção entre 1 e {len(opcoes)}: "))
+            if opcao < 1 or opcao > len(opcoes):
+                print("\033[H\033[J", end="")
+                print("Opção inválida!\n")
+                continue
+            break
+        except ValueError:
+            print("\033[H\033[J", end="")
+            print(f"Digite um número entre 1 e {len(opcoes)}!\n")
+    
     if opcao == 1:
         adicionarItem()
     elif opcao == 2:
@@ -28,9 +38,6 @@ def menu():
         visualizarLista()
     elif opcao == 5:
         sair()
-    else:
-        print("\033[H\033[J", end="")
-        opcao = int(input(f"Por favor, digite uma opção entre 1 e {len(opcoes)}: "))
         
 def adicionarItem():
     print("\033[H\033[J", end="")
