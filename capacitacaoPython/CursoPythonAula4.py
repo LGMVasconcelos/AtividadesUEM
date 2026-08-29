@@ -1,5 +1,5 @@
 from math import sqrt as raiz
-from calculosAula4 import dobro_mais_raiz
+from capacitacaoPython.calculosAula4 import dobro_mais_raiz
 # Exercício 1:
 print("Exercício 1:\n")
 
