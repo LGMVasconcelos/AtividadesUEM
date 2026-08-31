@@ -1,14 +1,20 @@
+from __future__ import annotations
 from typing import Generic, TypeVar
 
-from arranjo import Arranjo
-
+from dataclasses import dataclass
 
 T = TypeVar("T")
+
+@dataclass
+class No(Generic[T]):
+    elemento: T
+    proximo: No[T] | None
+
 
 
 class Lista(Generic[T]):
     """
-    Representa uma Lista implementada utilizando um arranjo dinâmico.
+    Representa uma Lista implementada utilizando encadeamento.
 
     A Lista representa uma sequência ordenada de elementos, permitindo
     acesso, alteração, busca, inserção e remoção em diferentes posições.
@@ -17,35 +23,26 @@ class Lista(Generic[T]):
     quando necessário.
     """
 
-    __dados: Arranjo[T]
+    __inicio: No[T] | None
     __quantidade: int
 
-    def __init__(self, capacidade: int) -> None:
+    def __init__(self) -> None:
         """
-        Cria uma Lista vazia com a capacidade inicial informada.
-
-        Parâmetros
-        ----------
-        capacidade
-        Capacidade inicial do arranjo.
-
-        Pré-condição
-        ------------
-        ``capacidade > 0``
+        Cria uma Lista vazia.
 
         Pós-condição
         ------------
-        A Lista está vazia e possui a capacidade inicial informada.
+        A Lista está vazia.
 
         Exemplos
         --------
-        >>> lista = Lista[int](5)
+        >>> lista = Lista[int]()
         >>> lista.is_empty()
         True
         >>> len(lista)
         0
         """
-        self.__dados = Arranjo[T](capacidade)
+        self.__inicio = None
         self.__quantidade = 0
 
     def __len__(self) -> int:
@@ -55,7 +52,7 @@ class Lista(Generic[T]):
         Retorna
         -------
         int
-        Número de elementos armazenados na Lista.
+            Número de elementos armazenados na Lista.
 
         Pós-condição
         ------------
@@ -63,7 +60,7 @@ class Lista(Generic[T]):
 
         Exemplos
         --------
-        >>> lista = Lista[int](5)
+        >>> lista = Lista[int]()
         >>> len(lista)
         0
 
@@ -73,6 +70,7 @@ class Lista(Generic[T]):
         2
         """
         return self.__quantidade
+
     def is_empty(self) -> bool:
         """
         Verifica se a Lista está vazia.
@@ -80,7 +78,7 @@ class Lista(Generic[T]):
         Retorna
         -------
         bool
-        ``True`` se a Lista estiver vazia e ``False`` caso contrário.
+            ``True`` se a Lista estiver vazia e ``False`` caso contrário.
 
         Pós-condição
         ------------
@@ -88,7 +86,7 @@ class Lista(Generic[T]):
 
         Exemplos
         --------
-        >>> lista = Lista[int](5)
+        >>> lista = Lista[int]()
         >>> lista.is_empty()
         True
 
@@ -105,12 +103,12 @@ class Lista(Generic[T]):
         Parâmetros
         ----------
         posição
-        Posição do elemento na Lista.
+            Posição do elemento na Lista.
 
         Retorna
         -------
         T
-        Elemento armazenado na posição.
+            Elemento armazenado na posição.
 
         Pré-condição
         ------------
@@ -119,11 +117,11 @@ class Lista(Generic[T]):
         Levanta
         -------
         IndexError
-        Se a posição for inválida.
+            Se a posição for inválida.
 
         Exemplos
         --------
-        >>> lista = Lista[int](5)
+        >>> lista = Lista[int]()
         >>> lista.insert(0, 10)
         >>> lista.insert(1, 20)
         >>> lista.insert(2, 30)
@@ -136,8 +134,16 @@ class Lista(Generic[T]):
         IndexError: posição inválida
         """
         if posição < 0 or posição >= self.__quantidade:
-            raise IndexError("posição inválida")
-        return self.__dados[posição]
+            raise IndexError('posição inválida')
+
+        if self.is_empty():
+            raise ValueError('lista vazia')
+
+        p: No[T] | None = self.__inicio
+        for i in range(0, posição):
+            p = p.proximo
+        return p.elemento
+
 
     def __setitem__(self, posição: int, elemento: T) -> None:
         """
@@ -146,9 +152,9 @@ class Lista(Generic[T]):
         Parâmetros
         ----------
         posição
-        Posição do elemento que será substituído.
+            Posição do elemento que será substituído.
         elemento
-        Novo elemento.
+            Novo elemento.
 
         Pré-condição
         ------------
@@ -161,11 +167,11 @@ class Lista(Generic[T]):
         Levanta
         -------
         IndexError
-        Se a posição for inválida.
+            Se a posição for inválida.
 
         Exemplos
         --------
-        >>> lista = Lista[int](5)
+        >>> lista = Lista[int]()
         >>> lista.insert(0, 10)
         >>> lista.insert(1, 20)
         >>> lista[1] = 25
@@ -173,8 +179,16 @@ class Lista(Generic[T]):
         25
         """
         if posição < 0 or posição >= self.__quantidade:
-            raise IndexError("posição inválida")
-        self.__dados[posição] = elemento
+            raise IndexError('posição inválida')
+
+        if self.is_empty():
+            raise ValueError('lista vazia')
+
+        p: No[T] | None = self.__inicio
+        for i in range(0, posição):
+            p = p.proximo
+        p.elemento = elemento
+        
 
     def find(self, elemento: T) -> int:
         """
@@ -183,13 +197,13 @@ class Lista(Generic[T]):
         Parâmetros
         ----------
         elemento
-        Elemento procurado.
+            Elemento procurado.
 
         Retorna
         -------
         int
-        Posição da primeira ocorrência do elemento.
-        Retorna ``-1`` se o elemento não estiver na Lista.
+            Posição da primeira ocorrência do elemento.
+            Retorna ``-1`` se o elemento não estiver na Lista.
 
         Pós-condição
         ------------
@@ -197,7 +211,7 @@ class Lista(Generic[T]):
 
         Exemplos
         --------
-        >>> lista = Lista[int](5)
+        >>> lista = Lista[int]()
         >>> lista.insert(0, 10)
         >>> lista.insert(1, 20)
         >>> lista.insert(2, 30)
@@ -206,10 +220,15 @@ class Lista(Generic[T]):
         >>> lista.find(50)
         -1
         """
-        for i in range(self.__quantidade):
-            if self.__dados[i] == elemento:
+        p = self.__inicio
+        i = 0
+        while p != None: 
+            if p.elemento == elemento:
                 return i
+            i += 1
+            p = p.proximo
         return -1
+
 
     def insert(self, posição: int, elemento: T) -> None:
         """
@@ -221,9 +240,9 @@ class Lista(Generic[T]):
         Parâmetros
         ----------
         posição
-        Posição na qual o elemento será inserido.
+            Posição na qual o elemento será inserido.
         elemento
-        Elemento a ser inserido.
+            Elemento a ser inserido.
 
         Pré-condição
         ------------
@@ -237,11 +256,11 @@ class Lista(Generic[T]):
         Levanta
         -------
         IndexError
-        Se a posição for inválida.
+            Se a posição for inválida.
 
         Exemplos
         --------
-        >>> lista = Lista[str](5)
+        >>> lista = Lista[str]()
         >>> lista.insert(0, "A")
         >>> lista.insert(1, "B")
         >>> lista.insert(2, "D")
@@ -261,13 +280,24 @@ class Lista(Generic[T]):
         IndexError: posição inválida
         """
         if posição < 0 or posição > self.__quantidade:
-            raise IndexError("posição inválida")
-        if self.__quantidade == len(self.__dados):
-            self.__redimensionar(len(self.__dados) * 2)
-        for i in range(self.__quantidade, posição, -1):
-            self.__dados[i] = self.__dados[i - 1]
-            self.__dados[posição] = elemento
+            raise IndexError('posição inválida')
+
+        novo = No(elemento, None)
+
+        if self.__inicio == None:
+            self.__inicio = novo
+        else:
+            if posição == 0:
+                novo.proximo = self.__inicio
+                self.__inicio = novo
+            else:
+                p: No[T] | None = self.__inicio
+                for i in range(0, posição-1):
+                    p = p.proximo
+                novo.proximo = p.proximo
+                p.proximo = novo
         self.__quantidade += 1
+        
 
     def remove(self, posição: int) -> T:
         """
@@ -279,12 +309,12 @@ class Lista(Generic[T]):
         Parâmetros
         ----------
         posição
-        Posição do elemento que será removido.
+            Posição do elemento que será removido.
 
         Retorna
         -------
         T
-        Elemento removido.
+            Elemento removido.
 
         Pré-condição
         ------------
@@ -298,11 +328,11 @@ class Lista(Generic[T]):
         Levanta
         -------
         IndexError
-        Se a posição for inválida.
+            Se a posição for inválida.
 
         Exemplos
         --------
-        >>> lista = Lista[str](5)
+        >>> lista = Lista[str]()
         >>> lista.insert(0, "A")
         >>> lista.insert(1, "B")
         >>> lista.insert(2, "C")
@@ -319,38 +349,16 @@ class Lista(Generic[T]):
         IndexError: posição inválida
         """
         if posição < 0 or posição >= self.__quantidade:
-            raise IndexError("posição inválida")
-        elemento = self.__dados[posição]
-        for i in range(posição, self.__quantidade - 1):
-            self.__dados[i] = self.__dados[i + 1]
+            raise IndexError('posição inválida')
+
+        if posição == 0:
+            self.__inicio = self.__inicio.proximo
+        else:
+            p: No[T] | None = self.__inicio
+            for i in range(0, posição-1):
+                p = p.proximo
+            elemento = p.proximo.elemento
+            p.proximo = p.proximo.proximo
+
         self.__quantidade -= 1
         return elemento
-
-
-
-    def __redimensionar(self, nova_capacidade: int) -> None:
-        """
-        Redimensiona o arranjo utilizado pela Lista.
-
-        Os elementos existentes são copiados para um novo arranjo.
-
-        Parâmetros
-        ----------
-        nova_capacidade
-        Nova capacidade do arranjo.
-
-        Pré-condição
-        ------------
-        ``nova_capacidade >= size()``
-
-        Pós-condição
-        ------------
-        Todos os elementos da Lista são preservados e a capacidade
-        passa a ser ``nova_capacidade``.
-        """
-        if nova_capacidade < self.__quantidade:
-            raise ValueError("nova capacidade inválida")
-        aux = self.__dados
-        self.__dados = Arranjo(nova_capacidade)
-        for i in range(self.__quantidade):
-            self.__dados[i] = aux[i]
