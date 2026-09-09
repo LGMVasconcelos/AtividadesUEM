@@ -1,2 +1,8 @@
 .mypy_cache/
 __pycache__
+estruturasDeDados/uno/.DS_Store
+estruturasDeDados/uno/data_structures/.DS_Store
+estruturasDeDados/uno/game/.DS_Store
+.gitignore
+estruturasDeDados/uno/models/.DS_Store
+estruturasDeDados/uno/ui/.DS_Store
