@@ -19,11 +19,11 @@ class TurnManager:
         Raises:
             ValueError: Se a lista de jogadores estiver vazia.
         """
-        if len(players) == 0:
-            raise ValueError("É necessário ter pelo menos um jogador.")
+        if len(players) < 2:
+            raise ValueError("É necessário ter pelo menos dois jogadores.")
 
         self.players = players
-        self.direction = 1
+        self.direction = 1 #sentido horário: 1, sentido anti-horário: -1
 
     def current(self) -> Player:
         """
@@ -41,8 +41,11 @@ class TurnManager:
         Returns:
             O jogador que passa a ter o turno.
         """
-        self.players.next()
-        return self.players.current()
+        if self.direction == 1:
+            return self.players.move_next()
+        else:
+            return self.players.move_previous()
+        
 
     def peek_next(self) -> Player:
         """
@@ -51,11 +54,10 @@ class TurnManager:
         Returns:
             O jogador que jogaria em seguida.
         """
-        current_player = self.players.current()
-        self.players.next()
-        next_player = self.players.current()
-        self.players.move_previous()
-        return next_player
+        if self.direction == 1:
+            return self.players.peek(1)
+        else:
+            return self.players.peek(-1)
 
     def previous(self) -> Player:
         """
@@ -64,18 +66,19 @@ class TurnManager:
         Returns:
             O jogador que passa a ter o turno.
         """
-        self.players.previous()
-        return self.players.current()
+        if self.direction == 1:
+            return self.players.move_previous()
+        else:
+            return self.players.move_next()
 
     def reverse(self) -> None:
         """
         Inverte a direção dos turnos.
         """
-        self.direction *= -1
         if self.direction == 1:
-            self.players.next()
+            self.direction = -1
         else:
-            self._players.previous()
+            self.direction = 1
 
 
     def advance(self, amount: int = 1) -> Player:
@@ -92,9 +95,5 @@ class TurnManager:
             ValueError: Se amount for negativo.
         """
         if amount < 0:
-            raise ValueError("A quantidade a avançar deve ser positiva.")
-
-        for _ in range(amount):
-            self.next()
-
-        return self.current()
+            raise ValueError("O valor não pode ser negativo")
+        return self.next() * amount

@@ -150,7 +150,7 @@ class Game:
 
         valid = []
 
-        for index, card in enumerate(player.hand):
+        for index, card in enumerate(player.hand):            
             if Rules.can_play(card, top_card, self.current_color):
                 valid.append(index)
 
@@ -279,19 +279,23 @@ class Game:
         if played_card is not None:
             if played_card.type == CardType.REVERSE:
                 # IMPLEMENTAR
-                pass
+                self.turn_manager.reverse()
 
             elif played_card.type == CardType.SKIP:
                 # IMPLEMENTAR
-                pass
+                self.turn_manager.next()
 
             elif played_card.type == CardType.DRAW_TWO:
                 # IMPLEMENTAR
-                pass
+                next_player = self.turn_manager.peek_next()
+                self._draw_for_player(next_player, 2)
+                self.turn_manager.next()
 
             elif played_card.type == CardType.WILD_DRAW_FOUR:
                 # IMPLEMENTAR
-                pass
+                next_player = self.turn_manager.peek_next()
+                self._draw_for_player(next_player, 4)
+                self.turn_manager.next()
             
         self.turn_manager.next()
 

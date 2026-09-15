@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from arranjo import Arranjo
+from .arranjo import Arranjo
 
 T = TypeVar("T")
 
