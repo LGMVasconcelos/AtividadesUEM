@@ -36,8 +36,8 @@ class CircularList(Generic[T]):
         elemento anterior.
     """
 
-    _sentinela: Node[T] | None
-    _quantidade: int
+    __sentinela: Node[T] | None
+    __quantidade: int
     __current: Node[T] | None
 
     def __init__(self) -> None:
