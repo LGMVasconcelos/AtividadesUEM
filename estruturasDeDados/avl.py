@@ -98,17 +98,17 @@ class AVL(Generic[T]):
         6. Retornar a raiz atualizada da subárvore.
         """
         if atual is None:
-            return No(valor)
+           return No(valor)
         
-        if valor < atual.valor:
-            atual.esquerda = self.__inserir(atual.esquerda, valor)
-        elif valor > atual.valor:
-            atual.direita = self.__inserir(atual.direita, valor)
-        else:
-            return atual
+        if atual.valor > valor:
+           atual.esquerda = self.__inserir(atual.esquerda, valor)
+        elif atual.valor < valor:
+           atual.direita = self.__inserir(atual.direita, valor)
 
         self.__atualizar_altura(atual)
-        return self.__rebalancear(atual)
+        self.__rebalancear(atual)
+
+        return atual
 
 
     def buscar(self, valor: T) -> bool:
@@ -290,6 +290,7 @@ class AVL(Generic[T]):
         """
         if atual is None:
             return -1
+        
         return atual.altura
 
     def __atualizar_altura(self, atual: No[T]) -> None:
@@ -299,10 +300,9 @@ class AVL(Generic[T]):
         TODO:
         Aplicar a definição recursiva da altura.
         """
-        if atual is not None:
-            altura_esquerda = self.__altura_no(atual.esquerda)
-            altura_direita = self.__altura_no(atual.direita)
-            atual.altura = 1 + max(altura_esquerda, altura_direita)
+        atual_esquerda = self.__altura_no(atual.esquerda)
+        atual_direita = self.__altura_no(atual.direita)
+        atual.altura = 1 + max(atual_esquerda, atual_direita)
 
     def __fator_balanceamento(self, atual: No[T]) -> int:
         """
@@ -314,9 +314,7 @@ class AVL(Generic[T]):
         TODO:
         Calcular e retornar o fator de balanceamento.
         """
-        if atual is not None:
-            return self.__altura_no(atual.esquerda) - self.__altura_no(atual.direita)
-        return 0
+        return self.__altura_no(atual.esquerda) - self.__altura_no(atual.direita)
 
     # ======================================================
     # ROTAÇÕES
@@ -340,17 +338,15 @@ class AVL(Generic[T]):
         - Atualizar as alturas na ordem correta.
         - Retornar a nova raiz da subárvore.
         """
-        if atual is not None:
-            nova_raiz = atual.esquerda
-            if nova_raiz is not None:
-                atual.esquerda = nova_raiz.direita
-                nova_raiz.direita = atual
+        nova_raiz = atual.esquerda
+        filho_direita = atual
+        filho_direita.esquerda = nova_raiz.direita
+        nova_raiz.direita = filho_direita
 
-                self.__atualizar_altura(atual)
-                self.__atualizar_altura(nova_raiz)
+        self.__atualizar_altura(filho_direita)
+        self.__atualizar_altura(nova_raiz)
 
-                return nova_raiz
-        return atual
+        return nova_raiz
 
     def __rotacao_esquerda(self, atual: No[T]) -> No[T]:
         """
@@ -362,17 +358,15 @@ class AVL(Generic[T]):
         - Atualizar as alturas na ordem correta.
         - Retornar a nova raiz da subárvore.
         """
-        if atual is not None:
-            nova_raiz = atual.direita
-            if nova_raiz is not None:
-                atual.direita = nova_raiz.esquerda
-                nova_raiz.esquerda = atual
+        nova_raiz = atual.direita
+        filho_esquerda = atual
+        filho_esquerda.direita = nova_raiz.esquerda
+        nova_raiz.direita = filho_esquerda
 
-                self.__atualizar_altura(atual)
-                self.__atualizar_altura(nova_raiz)
+        self.__atualizar_altura(filho_esquerda)
+        self.__atualizar_altura(nova_raiz)
 
-                return nova_raiz
-        return atual
+        return nova_raiz
 
     def __rebalancear(self, atual: No[T]) -> No[T]:
         """
@@ -385,22 +379,23 @@ class AVL(Generic[T]):
         - Executar a rotação simples ou dupla adequada.
         - Retornar a raiz atualizada da subárvore.
         """
-        if atual is not None:
-            self.__atualizar_altura(atual)
-            fb = self.__fator_balanceamento(atual)
+        self.__atualizar_altura(atual)
+        fb = self.__fator_balanceamento(atual)
 
-            if fb > 1:
-                if self.__fator_balanceamento(atual.esquerda) < 0:
-                    atual.esquerda = self.__rotacao_esquerda(atual.esquerda)
-                return self.__rotacao_direita(atual)
-            elif fb < -1:
-                if self.__fator_balanceamento(atual.direita) > 0:
-                    atual.direita = self.__rotacao_direita(atual.direita)
-                return self.__rotacao_esquerda(atual)
+        if fb > 1:
+            if self.__fator_balanceamento(atual.esquerda) >= 0:
+                atual = self.__rotacao_direita(atual)
+            else:
+                atual.esquerda = self.__rotacao_esquerda(atual.esquerda)
+                atual = self.__rotacao_direita(atual)
+        elif fb < -1:
+            if self.__fator_balanceamento(atual.direita) >= 0:
+                atual = self.__rotacao_esquerda(atual)
+            else:
+                atual.direita = self.__rotacao_direita(atual.direita)
+                atual = self.__rotacao_esquerda(atual)
 
         return atual
-
-
 
     def remover(self, valor: T) -> None:
         """
@@ -457,27 +452,27 @@ class AVL(Generic[T]):
         7. Retornar a nova raiz da subárvore.
         """
         if atual is None:
-            return None
+           return None
         
         if atual.valor > valor:
-            atual.esquerda = self.__remover(atual.esquerda, valor)
+           atual.esquerda = self.__remover(atual.esquerda, valor)
         elif atual.valor < valor:
-            atual.direita = self.__remover(atual.direita, valor)
+           atual.direita = self.__remover(atual.direita, valor)
         else:
-            if atual.esquerda is None and atual.direita is None:
-                return None
-            elif atual.esquerda is None:
-                return atual.direita
-            elif atual.direita is None:
-                return atual.esquerda
-            else:
-                sucessor = self.__sucessor(atual)
-                atual.valor = sucessor
-                atual.direita = self.__remover(atual.direita, sucessor)
+           if atual.esquerda is None and atual.direita is None:
+               return None
+           elif atual.esquerda is None:
+               return atual.direita
+           elif atual.direita is None:
+               return atual.esquerda
+           else:
+               sucessor = self.__sucessor(atual)
+               atual.valor = sucessor
+               atual.direita = self.__remover(atual.direita, sucessor)
 
         self.__atualizar_altura(atual)
-        atual = self.__rebalancear(atual)
-        
+        self.__rebalancear(atual)
+
         return atual
 
     def __sucessor(self, atual: No[T]) -> T:
