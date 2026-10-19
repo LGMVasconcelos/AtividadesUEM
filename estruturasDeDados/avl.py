@@ -98,17 +98,14 @@ class AVL(Generic[T]):
         6. Retornar a raiz atualizada da subárvore.
         """
         if atual is None:
-           return No(valor)
-        
+            return No(valor)
+
         if atual.valor > valor:
-           atual.esquerda = self.__inserir(atual.esquerda, valor)
+            atual.esquerda = self.__inserir(atual.esquerda, valor)
         elif atual.valor < valor:
-           atual.direita = self.__inserir(atual.direita, valor)
+            atual.direita = self.__inserir(atual.direita, valor)
 
-        self.__atualizar_altura(atual)
-        self.__rebalancear(atual)
-
-        return atual
+        return self.__rebalancear(atual)
 
 
     def buscar(self, valor: T) -> bool:
@@ -361,7 +358,7 @@ class AVL(Generic[T]):
         nova_raiz = atual.direita
         filho_esquerda = atual
         filho_esquerda.direita = nova_raiz.esquerda
-        nova_raiz.direita = filho_esquerda
+        nova_raiz.esquerda = filho_esquerda
 
         self.__atualizar_altura(filho_esquerda)
         self.__atualizar_altura(nova_raiz)
@@ -389,7 +386,7 @@ class AVL(Generic[T]):
                 atual.esquerda = self.__rotacao_esquerda(atual.esquerda)
                 atual = self.__rotacao_direita(atual)
         elif fb < -1:
-            if self.__fator_balanceamento(atual.direita) >= 0:
+            if self.__fator_balanceamento(atual.direita) <= 0:
                 atual = self.__rotacao_esquerda(atual)
             else:
                 atual.direita = self.__rotacao_direita(atual.direita)
@@ -470,10 +467,7 @@ class AVL(Generic[T]):
                atual.valor = sucessor
                atual.direita = self.__remover(atual.direita, sucessor)
 
-        self.__atualizar_altura(atual)
-        self.__rebalancear(atual)
-
-        return atual
+        return self.__rebalancear(atual)
 
     def __sucessor(self, atual: No[T]) -> T:
         sucessor = atual.direita
