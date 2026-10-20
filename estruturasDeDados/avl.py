@@ -24,8 +24,7 @@ class No(Generic[T]):
 
 class AVL(Generic[T]):
     """
-    Tipo AAVLrato de Dados Árvore AVL 
-    (Georgy Adelson-Velsky e Yevgeniy Landis).
+    Tipo abstrato de Dados Árvore AVL.
 
     A árvore mantém a seguinte propriedade para cada nó:
 
