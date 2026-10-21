@@ -22,8 +22,6 @@ class Conjunto(Generic[T]):
 
     Pré-requisito geral
     -------------------
-    Os elementos devem poder ser comparados com ``==``. Para exibir o
-    conjunto (``repr``), devem também ser comparáveis com ``<``.
 
     Operações que produzem novos conjuntos (uniao, intersecao, diferenca)
     NÃO modificam os conjuntos de entrada.
