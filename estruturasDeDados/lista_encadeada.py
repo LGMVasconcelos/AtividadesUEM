@@ -20,8 +20,8 @@ class ListaEncadeada(Generic[T]):
     A Lista representa uma sequência ordenada de elementos, permitindo
     acesso, alteração, busca, inserção e remoção em diferentes posições.
 
-    A representação utiliza um arranjo cuja capacidade pode ser aumentada
-    quando necessário.
+    A representação utiliza nós encadeados: cada nó guarda um elemento e
+    uma referência para o próximo nó.
     """
 
     __inicio: No[T] | None
@@ -348,11 +348,21 @@ class ListaEncadeada(Generic[T]):
         Traceback (most recent call last):
         ...
         IndexError: posição inválida
+
+        Remoção do primeiro nó e da lista que fica vazia:
+
+        >>> lista.remove(0)
+        'A'
+        >>> lista.remove(0)
+        'C'
+        >>> lista.is_empty()
+        True
         """
         if posição < 0 or posição >= self.__quantidade:
             raise IndexError('posição inválida')
 
         if posição == 0:
+            elemento = self.__inicio.elemento
             self.__inicio = self.__inicio.proximo
         else:
             p: No[T] | None = self.__inicio
@@ -363,3 +373,36 @@ class ListaEncadeada(Generic[T]):
 
         self.__quantidade -= 1
         return elemento
+    def to_list(self) -> list[T]:
+        """
+        Retorna uma nova lista Python com os elementos, da posição 0
+        até a última.
+
+        Retorna
+        -------
+        list[T]
+            Cópia dos elementos, na ordem da Lista.
+
+        Pós-condição
+        ------------
+        O estado da Lista permanece inalterado. Alterar a lista
+        retornada não altera a Lista.
+
+        Exemplos
+        --------
+        >>> lista = ListaEncadeada[int]()
+        >>> lista.to_list()
+        []
+
+        >>> lista.insert(0, 10)
+        >>> lista.insert(1, 20)
+        >>> lista.insert(0, 5)
+        >>> lista.to_list()
+        [5, 10, 20]
+        """
+        resultado: list[T] = []
+        p = self.__inicio
+        while p is not None:
+            resultado.append(p.elemento)
+            p = p.proximo
+        return resultado

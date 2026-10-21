@@ -28,6 +28,11 @@ class Conjunto(Generic[T]):
     Operações que produzem novos conjuntos (uniao, intersecao, diferenca)
     NÃO modificam os conjuntos de entrada.
 
+    Complexidade
+    ------------
+    Nas operações abaixo, n = tamanho de self, m = tamanho de `outro` e a
+    altura da AVL é O(log n).
+
     Exemplos
     --------
     >>> A = Conjunto([1, 2, 3, 4])
@@ -45,6 +50,8 @@ class Conjunto(Generic[T]):
         Cria um conjunto, opcionalmente a partir de elementos iniciais.
         Elementos repetidos são ignorados.
 
+        Complexidade: O(k log k), com k = quantidade de elementos iniciais (k inserções de custo O(log k)).
+
         Exemplos
         --------
         >>> Conjunto()
@@ -59,10 +66,12 @@ class Conjunto(Generic[T]):
             for elemento in elementos_iniciais:
                 self.inserir(elemento)
 
-
     def elementos(self) -> list[T]:
         """
         Retorna os elementos em ordem crescente (nova lista).
+
+        Complexidade: O(n log n) com o avl.py atual, pois o percurso em ordem
+        concatena listas a cada nó (acumulando em uma única lista seria O(n)).
 
         Exemplos
         --------
@@ -78,6 +87,9 @@ class Conjunto(Generic[T]):
         """
         Insere `x` no conjunto, caso ainda não pertença a ele.
         Se `x` já estiver presente, o conjunto não é modificado.
+
+        Complexidade: O(log n). A busca de duplicata e a inserção descem pela
+        árvore, cuja altura é O(log n); o contador é O(1).
 
         Exemplos
         --------
@@ -113,6 +125,9 @@ class Conjunto(Generic[T]):
         Remove `x` do conjunto, caso pertença a ele.
         Se `x` não estiver presente, o conjunto não é modificado.
 
+        Complexidade: O(log n). A busca e a remoção descem pela árvore, cuja
+        altura é O(log n); o contador é O(1).
+
         Exemplos
         --------
         >>> A = Conjunto([1, 2, 3])
@@ -147,6 +162,9 @@ class Conjunto(Generic[T]):
         """
         Retorna True se `x` pertence ao conjunto.
 
+        Complexidade: O(log n). Cada comparação descarta uma subárvore, e a
+        altura da AVL é O(log n).
+
         Exemplos
         --------
         >>> A = Conjunto([1, 2, 3])
@@ -164,6 +182,8 @@ class Conjunto(Generic[T]):
         """
         Retorna a quantidade de elementos do conjunto.
 
+        Complexidade: O(1), pois o tamanho fica guardado em `__tamanho`.
+
         Exemplos
         --------
         >>> Conjunto().tamanho()
@@ -177,6 +197,8 @@ class Conjunto(Generic[T]):
     def vazio(self) -> bool:
         """
         Retorna True se o conjunto não possui elementos.
+
+        Complexidade: O(1), basta verificar se a raiz é None.
 
         Exemplos
         --------
@@ -192,6 +214,9 @@ class Conjunto(Generic[T]):
         """
         Retorna um novo conjunto com os elementos de self, de `outro`
         ou de ambos. Não modifica self nem `outro`.
+
+        Complexidade: O((n + m) log(n + m)). Copia self (n inserções) e insere os
+        m elementos de `outro`, cada inserção em O(log(n + m)).
 
         Exemplos
         --------
@@ -236,6 +261,9 @@ class Conjunto(Generic[T]):
         """
         Retorna um novo conjunto com os elementos comuns a self e
         `outro`. Não modifica self nem `outro`.
+
+        Complexidade: O(n log n + n log m). Percorre os n elementos de self; cada
+        um é buscado em `outro` (O(log m)) e inserido no resultado (O(log n)).
 
         Exemplos
         --------
@@ -282,6 +310,9 @@ class Conjunto(Generic[T]):
 
         A operação não é comutativa: A - B pode diferir de B - A.
 
+        Complexidade: O(n log n + n log m). Percorre os n elementos de self; cada
+        um é buscado em `outro` (O(log m)) e inserido no resultado (O(log n)).
+
         Exemplos
         --------
         Parcialmente sobrepostos:
@@ -326,6 +357,9 @@ class Conjunto(Generic[T]):
         """
         Retorna True se self é subconjunto de `outro`.
 
+        Complexidade: O(n log m) no pior caso (n <= m): n buscas em `outro`.
+        Se n > m, responde False em O(1) sem percorrer nada.
+
         Exemplos
         --------
         >>> Conjunto([1, 2]).contido(Conjunto([1, 2, 3]))
@@ -352,3 +386,12 @@ class Conjunto(Generic[T]):
                 return False
 
         return True
+
+    def __repr__(self) -> str:
+        """
+        Complexidade: O(n log n), por causa de elementos().
+
+        >>> Conjunto([2, 1])
+        Conjunto([1, 2])
+        """
+        return f"Conjunto({self.elementos()})"
