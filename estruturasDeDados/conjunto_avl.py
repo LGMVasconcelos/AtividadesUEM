@@ -223,9 +223,9 @@ class Conjunto(Generic[T]):
 
         >>> A = Conjunto([1, 2])
         >>> B = Conjunto([2, 3])
-        >>> _ = A.uniao(B)
-        >>> A, B
-        (Conjunto([1, 2]), Conjunto([2, 3]))
+        >>> C = A.uniao(B)
+        >>> A, B, C
+        (Conjunto([1, 2]), Conjunto([2, 3]), Conjunto([1, 2, 3]))
         """
         resultado = Conjunto(self.elementos())
         for elemento in outro.elementos():
@@ -265,9 +265,9 @@ class Conjunto(Generic[T]):
 
         >>> A = Conjunto([1, 2, 3])
         >>> B = Conjunto([2, 3, 4])
-        >>> _ = A.intersecao(B)
-        >>> A, B
-        (Conjunto([1, 2, 3]), Conjunto([2, 3, 4]))
+        >>> C = A.intersecao(B)
+        >>> A, B, C
+        (Conjunto([1, 2, 3]), Conjunto([2, 3, 4]), Conjunto([2, 3]))
         """
         resultado = Conjunto[T]()
         for elemento in self.elementos():
@@ -312,9 +312,9 @@ class Conjunto(Generic[T]):
 
         >>> A = Conjunto([1, 2, 3])
         >>> B = Conjunto([3])
-        >>> _ = A.diferenca(B)
-        >>> A, B
-        (Conjunto([1, 2, 3]), Conjunto([3]))
+        >>> C = A.diferenca(B)
+        >>> A, B, C
+        (Conjunto([1, 2, 3]), Conjunto([3]), Conjunto([1, 2]))
         """
         resultado = Conjunto[T]()
         for elemento in self.elementos():
