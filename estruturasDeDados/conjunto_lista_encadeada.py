@@ -57,4 +57,50 @@ class Conjunto(Generic[T]):
             for elemento in elementos_iniciais:
                 self.inserir(elemento)
                 
-    
+    def elementos(self, inicio: int, fim: int) -> list[T]:
+        """
+        Retorna uma lista com os elementos do conjunto.
+
+        Exemplos
+        --------
+        >>> A = Conjunto([3, 1, 2])
+        >>> A.elementos()
+        [1, 2, 3]
+        """
+        pivo = self.__lista.inicio
+        i = 0
+        elementos: ListaEncadeada[T] = ListaEncadeada()
+        while pivo is not None and i < fim:
+            if i >= inicio:
+                elementos.inserir(pivo.dado)
+            pivo = pivo.proximo
+            i += 1
+
+        def quicksort(esquerda: int, direita: int) -> None:
+            if esquerda >= direita:
+                return
+
+            indice_pivo = (esquerda + direita) // 2
+            valor_pivo = elementos[indice_pivo]
+            menor, maior = esquerda, direita
+
+            while menor <= maior:
+                while elementos[menor] < valor_pivo:
+                    menor += 1
+                while elementos[maior] > valor_pivo:
+                    maior -= 1
+                if menor <= maior:
+                    elementos[menor], elementos[maior] = (
+                        elementos[maior], elementos[menor]
+                    )
+                    menor += 1
+                    maior -= 1
+
+            if esquerda < maior:
+                quicksort(esquerda, maior)
+            if menor < direita:
+                quicksort(menor, direita)
+
+        if elementos:
+            quicksort(0, len(elementos) - 1)
+        return elementos
